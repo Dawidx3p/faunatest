@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, useEffect, useState } from 'react'
+import analytics from './utils/analytics'
+import api from './utils/api'
+import sortByDate from './utils/sortByDate'
+import isLocalHost from './utils/isLocalHost'
+import './App.css'
+import AddTodo from './components/AddTodo'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+export default function App(){
+  const [todos, setTodos] = useState([]);
+  useEffect(() => {
+    analytics.page()
+
+    // Fetch all todos
+    api.readAll().then((todos) => {
+      if (todos.message === 'unauthorized') {
+        if (isLocalHost()) {
+          alert('FaunaDB key is not unauthorized. Make sure you set it in terminal session where you ran `npm start`. Visit http://bit.ly/set-fauna-key for more info')
+        } else {
+          alert('FaunaDB key is not unauthorized. Verify the key `FAUNADB_SERVER_SECRET` set in Netlify enviroment variables is correct')
+        }
+        return false
+      }
+
+      console.log('all todos', todos)
+      setTodos(todos)
+    },[])
+  })
+  return(
+    <>
+    <AddTodo todos={todos} updateTodos={(newState) => setTodos(newState)}/>
+    <ul>{todos.map((todo,key) => <li key={key}>{todo.data.title}</li>)}</ul>
+    </>
+    
+  )
 }
-
-export default App;

@@ -1,7 +1,6 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import analytics from './utils/analytics'
 import api from './utils/api'
-import sortByDate from './utils/sortByDate'
 import isLocalHost from './utils/isLocalHost'
 import './App.css'
 import AddTodo from './components/AddTodo'
